@@ -1,0 +1,129 @@
+version: '3.9'
+services:
+  user_service:
+    depends_on:
+      - mongo_db
+    container_name: user-service
+    image: server-dev:1.0.0
+    build:
+      context: .
+      target: development
+      dockerfile: ./Dockerfile
+    command: npm run start:debug user
+    ports:
+      - 3001:3001
+    environment:
+      MONGO_DB_HOST: mongo_db
+      MONGO_DB_DATABASE: e-commerce
+      MONGO_DB_PORT: 27017
+      USER_SERVICE_HOST: user_service
+      AUTH_SERVICE_HOST: auth_service
+      PRODUCT_SERVICE_HOST: product_service
+      ORDER_SERVICE_HOST: order_service
+    networks:
+      - server-network
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    restart: always
+  auth_service:
+    depends_on:
+      - mongo_db
+    container_name: auth-service
+    image: server-dev:1.0.0
+    build:
+      context: .
+      target: development
+      dockerfile: ./Dockerfile
+    command: npm run start:debug auth
+    ports:
+      - 3002:3002
+    environment:
+      MONGO_DB_HOST: mongo_db
+      MONGO_DB_DATABASE: e-commerce
+      MONGO_DB_PORT: 27017
+      USER_SERVICE_HOST: user_service
+      AUTH_SERVICE_HOST: auth_service
+      PRODUCT_SERVICE_HOST: product_service
+      ORDER_SERVICE_HOST: order_service
+    networks:
+      - server-network
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    restart: always
+  product_service:
+    depends_on:
+      - mongo_db
+    container_name: product-service
+    image: server-dev:1.0.0
+    build:
+      context: .
+      target: development
+      dockerfile: ./Dockerfile
+    command: npm run start:debug product
+    ports:
+      - 3003:3003
+    environment:
+      MONGO_DB_HOST: mongo_db
+      MONGO_DB_DATABASE: e-commerce
+      MONGO_DB_PORT: 27017
+      USER_SERVICE_HOST: user_service
+      AUTH_SERVICE_HOST: auth_service
+      PRODUCT_SERVICE_HOST: product_service
+      ORDER_SERVICE_HOST: order_service
+    networks:
+      - server-network
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    restart: always
+  order_service:
+    depends_on:
+      - mongo_db
+    container_name: order-service
+    image: server-dev:1.0.0
+    build:
+      context: .
+      target: development
+      dockerfile: ./Dockerfile
+    command: npm run start:debug order
+    ports:
+      - 3004:3004
+    environment:
+      MONGO_DB_HOST: mongo_db
+      MONGO_DB_DATABASE: e-commerce
+      MONGO_DB_PORT: 27017
+      USER_SERVICE_HOST: user_service
+      AUTH_SERVICE_HOST: auth_service
+      PRODUCT_SERVICE_HOST: product_service
+      ORDER_SERVICE_HOST: order_service
+    networks:
+      - server-network
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    restart: always
+  mongo_db:
+    image: mongo:4.4.5
+    restart: always
+    container_name: server-mongodb
+    networks:
+      - server-network
+    ports:
+      - 27017:27017
+    # healthcheck:
+    #   test: echo 'db.runCommand("ping").ok' | mongo localhost:27017/test --quiet
+    #   interval: 30s
+    #   timeout: 10s
+    #   retries: 3
+    volumes:
+      - db_data:/data/db
+    environment:
+      MONGO_INITDB_DATABASE: e-commerce
+
+volumes:
+  db_data:
+networks:
+  server-network:
+    
